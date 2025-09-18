@@ -1,2 +1,7 @@
-# Aws.Ec2.MongoDB.Backups.S3
-This repository contains various scripts to generate backups of MongoDB databases and store them securely in an S3 bucket. The scripts facilitate automated backup processes to ensure data safety and easy restoration when needed.
+# Aws.Ec2.MongoDB.Backups
+This repository contains several scripts to install MongoDB on EC2 instances, generate backups, and restore them, storing the backups securely in an S3 bucket. The scripts enable automated backup and restore processes, ensuring data security and facilitating recovery when needed. The process covers the entire lifecycle—from installing MongoDB on EC2, creating backups, to restoring them as required.
+
+### Folder structure
+- GenerateBackup: Scripts and information to generate and store backups in S3.
+- InstallMongoDB.Ec2: Scripts and steps to install MongoDB on EC2 instances.
+- RestoreBackup: Scripts and procedures to restore backups from S3 to EC2.
