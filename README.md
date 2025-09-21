@@ -3,5 +3,5 @@ This repository contains several scripts to install MongoDB on EC2 instances, ge
 
 ### Folder structure
 1. InstallMongoDB.Ec2: Scripts and steps to install MongoDB on EC2 instances.
-2.GenerateBackup: Scripts and information to generate and store backups in S3.
+2. GenerateBackup: Scripts and information to generate and store backups in S3.
 3. RestoreBackup: Scripts and procedures to restore backups from S3 to EC2.
