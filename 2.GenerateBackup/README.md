@@ -1,8 +1,8 @@
 # GenerateBackup
 Scripts and instructions to create automated daily backups of MongoDB. These scripts can be scheduled via cron to run daily, generating backups that are securely uploaded and stored in an S3 bucket. The folder includes detailed guidance on setting up the cron job and managing backup files.
 
-## Steps
-1. Agregar aws cli en la instancia
+## Steps to generate backups 👣
+1. Add AWS CLI to the instance
 ```
 sudo snap install aws-cli --classic
 ```

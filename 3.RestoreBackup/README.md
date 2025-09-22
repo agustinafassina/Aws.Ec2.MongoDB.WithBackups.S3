@@ -1,7 +1,7 @@
 # RestoreBackup
 Scripts and procedures to restore MongoDB backups from S3 to EC2 instances. Includes guidance on selecting the correct backup files and restoring the database to a desired state.
 
-## Steps
+## Steps to restore a database 👣
 1. Stop the MongoDB service (optional, to prevent conflicts during restore):
 ```
 sudo systemctl stop mongod
@@ -31,7 +31,7 @@ mongorestore --host=$MONGO_HOST --port=$MONGO_PORT --dir=/backups/01032025200001
 ```
 
 7. The --drop option ensures that existing collections are dropped before restoring.
-8. Verify the restored databases and data:
+8. Verify the restored databases and data
 9. Restart the MongoDB service:
 ```
 sudo systemctl start mongod

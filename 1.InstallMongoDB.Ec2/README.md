@@ -1,7 +1,7 @@
 # InstallMongoDB.Ec2
 Scripts and step-by-step instructions to install MongoDB on EC2 instances. These scripts facilitate quick and reliable deployment of MongoDB servers, ensuring consistent setup across environments.
 
-<img src="aws.png" alt="Aws" width="800" height="450">
+<img src="images/aws.png" alt="Aws" width="800" height="450">
 
 ### Requirenment 📝
 - Aws account
@@ -13,7 +13,7 @@ Scripts and step-by-step instructions to install MongoDB on EC2 instances. These
 - Create new instance
 - Select Quick Start -> Ubuntu and Ubuntu Server 24.04
 - Ubuntu 24.04–8gb
-<img src="ubuntu-detail.png" alt="Aws" width="800" height="450">
+<img src="images/ubuntu-detail.png" alt="Aws" width="800" height="450">
 
 ### Steps to install mongodb 👣
 1. Connect to the instance
@@ -50,7 +50,7 @@ sudo nano /etc/mongod.conf
 ```
 
 7. Replate the binIdP value 127.0.0.1 to 0.0.0.0
-<img src="ubuntu-detail.png" alt="Aws" width="400" height="450">
+<img src="images/ubuntu-detail.png" alt="Aws" width="400" height="450">
 
 ```
 sudo systemctl restart mongod
