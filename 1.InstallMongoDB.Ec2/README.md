@@ -50,14 +50,13 @@ sudo nano /etc/mongod.conf
 ```
 
 7. Replate the binIdP value 127.0.0.1 to 0.0.0.0
-<img src="images/ubuntu-detail.png" alt="Aws" width="400" height="450">
-
+8. Mongo restart
 ```
 sudo systemctl restart mongod
 ```
 
-8. Add your ip in the security group that has the associated instance.
-9. If you already uploaded the IP, you can test the connection to the instance.
+9. Add your ip in the security group that has the associated instance.
+10. If you already uploaded the IP, you can test the connection to the instance.
 
 #### How to test if the instance and mongo are working correctly? ⁉️
 1. Download https://robomongo.org/ to connect to the database.
