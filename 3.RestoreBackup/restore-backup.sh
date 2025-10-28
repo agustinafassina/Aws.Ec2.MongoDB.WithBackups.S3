@@ -1,9 +1,9 @@
 #!/bin/bash
 # Variables
-backupPath="/backup"
-mongoDbName=""                  # Change this to your database name
-mongoPort="27017"                     # Port where MongoDB is running
-mongoHost="localhost"                 # MongoDB host (adjust if using a different host)
+backup_path="/backup"
+mongo_db_name=""                  # Change this to your database name
+mongo_port="27017"                     # Port where MongoDB is running
+mongo_host="localhost"                 # MongoDB host (adjust if using a different host)
 
 # Step 1: Stop MongoDB service (optional, to prevent conflicts)
 echo "Stopping MongoDB service..."
@@ -14,8 +14,8 @@ echo "Cleaning existing data..."
 sudo rm -rf /var/lib/mongo/*
 
 # Step 3: Restore from backup
-echo "Restoring data from $backupPath..."
-mongorestore --host=$mongoHost --port=$mongoPort --dir=$backupPath --drop
+echo "Restoring data from $backup_path..."
+mongorestore --host=$mongo_host --port=$mongo_port --dir=$backup_path --drop
 
 # The --drop option drops existing collections before import
 
