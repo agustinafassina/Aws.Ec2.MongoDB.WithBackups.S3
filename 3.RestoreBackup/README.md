@@ -25,10 +25,25 @@ sudo systemctl stop mongod
 5. Create the target database if it does not exist:
 MongoDB creates databases automatically when data is inserted, so typically, no manual creation is required. Just ensure that the restore process is pointed to the correct database.
 
-6. Restore the database from the backup:
-```
-mongorestore --host=$MONGO_HOST --port=$MONGO_PORT --dir=/backups/01032025200001 --drop
-```
+6. Restore the database from the backup (using the script or manually):
+
+   **Using the script (recommended):**
+   ```bash
+   export BACKUP_PATH=/backups/01032025200001
+   export MONGO_HOST=localhost
+   export MONGO_PORT=27017
+   # If backup was created with --gzip:
+   export RESTORE_GZIP=true
+   # Optional: restore only one database:
+   export MONGO_DB_NAME=my_database
+   ./restore-backup.sh
+   ```
+
+   **Manual:**
+   ```
+   mongorestore --host=$MONGO_HOST --port=$MONGO_PORT --dir=/backups/01032025200001 --drop
+   ```
+   For gzip backups add: `--gzip`
 
 7. The --drop option ensures that existing collections are dropped before restoring.
 8. Verify the restored databases and data

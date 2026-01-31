@@ -1,17 +1,86 @@
-# Aws.Ec2.MongoDB.Backups
-This repository contains several scripts to install MongoDB on EC2 instances, generate backups, and restore them, storing the backups securely in an S3 bucket. The scripts enable automated backup and restore processes, ensuring data security and facilitating recovery when needed. The process covers the entire lifecycle—from installing MongoDB on EC2, creating backups, to restoring them as required.
+# Aws.Ec2.MongoDB.WithBackups.S3
+Scripts to install MongoDB on EC2, generate backups, and restore them, storing backups in an S3 bucket. Covers the full lifecycle: installation, automated backup, and restore when needed.
 
-<img src="diagram.png" alt="Aws" width="800" height="450">
+<img src="diagram.png" alt="EC2, MongoDB and S3 flow" width="800" height="450">
 
-### Folder structure
-0. Create Ec2: https://aws.amazon.com/ec2/?trk=e43d45a7-c478-45ae-b18c-db213b4c4627&sc_channel=ps&ef_id=Cj0KCQjw58PGBhCkARIsADbDilw1hdRup--OtvoGyxbBNE-rylwfAEQBdJjqXM1-TIviY_QAeZuuDbcaAttVEALw_wcB:G:s&s_kwcid=AL!4422!3!494972673535!p!!g!!aws%20ec2!12196406589!115425120645&gad_campaignid=12196406589&gbraid=0AAAAADjHtp9PI19GVrEQNyPDW6ExrSN3h&gclid=Cj0KCQjw58PGBhCkARIsADbDilw1hdRup--OtvoGyxbBNE-rylwfAEQBdJjqXM1-TIviY_QAeZuuDbcaAttVEALw_wcB
-- The EC2 instance must have a minimum volume of 30
-- The EC2 instance must have a minimum size of t3.small
-1. InstallMongoDB.Ec2: Scripts and steps to install MongoDB on EC2 instances.
-2. GenerateBackup: Scripts and information to generate and store backups in S3.
-  - Crontab in ubuntu: https://github.com/agustinafassina/Crontab.Script
-    - For the QA environment, it could be every two days or once a week.
-      - Every friday to 5 AM: 0 5 * * 5 /generate-backup.sh
-    - For the prod environment, it should be every day.
-      - Every day to 5 AM: 0 5 * * * /generate-backup.sh: 
-3. RestoreBackup: Scripts and procedures to restore backups from S3 to EC2.
+---
+
+#### Prerequisites
+Before using these scripts:
+- **Create an EC2 instance** (e.g. from [AWS EC2](https://aws.amazon.com/ec2/)).
+- **Minimum recommended size:** `t3.small`.
+- **Minimum volume:** 30 GB.
+
+---
+
+#### Repository structure
+| Folder | Description |
+|--------|-------------|
+| **[1.InstallMongoDB.Ec2](1.InstallMongoDB.Ec2/)** | Steps and instructions to install MongoDB on an EC2 instance (Ubuntu). |
+| **[2.GenerateBackup](2.GenerateBackup/)** | Script to generate backups with `mongodump` and upload them to S3. Includes logging, lock, and `--gzip` option. |
+| **[3.RestoreBackup](3.RestoreBackup/)** | Script and steps to download a backup from S3 and restore into MongoDB with `mongorestore`. |
+
+---
+
+#### Typical workflow
+1. Create the EC2 instance and meet the size/volume requirements.
+2. Follow **[1.InstallMongoDB.Ec2](1.InstallMongoDB.Ec2/)** to install MongoDB.
+3. Configure **[2.GenerateBackup](2.GenerateBackup/)** (S3 bucket, cron) for automated backups.
+4. When needed, use **[3.RestoreBackup](3.RestoreBackup/)** to restore from S3.
+
+---
+
+#### Automation with cron
+To run the backup automatically from the instance:
+- **Production (daily):** every day at 5:00 AM  
+  `0 5 * * * /home/ubuntu/generate-backup.sh --gzip >> /var/log/mongodb-backup.log 2>&1`
+- **QA (weekly):** every Friday at 5:00 AM  
+  `0 5 * * 5 /home/ubuntu/generate-backup.sh --gzip >> /var/log/mongodb-backup.log 2>&1`
+
+Adjust the script path (`/home/ubuntu/generate-backup.sh`) to match where you placed it. More details in [2.GenerateBackup/README.md](2.GenerateBackup/README.md).
+Cron reference for Ubuntu: [Crontab.Script](https://github.com/agustinafassina/Crontab.Script).
+
+---
+
+## ——— Español ———
+Scripts para instalar MongoDB en EC2, generar backups y restaurarlos, guardando los backups en un bucket S3. Cubre todo el ciclo: instalacion, backup automatico y restauracion cuando haga falta.
+
+<img src="diagram.png" alt="Flujo EC2, MongoDB y S3" width="800" height="450">
+
+---
+
+#### Requisitos previos
+Antes de usar estos scripts:
+- **Crear una instancia EC2** (por ejemplo desde [AWS EC2](https://aws.amazon.com/ec2/)).
+- **Tamaño mínimo recomendado:** `t3.small`.
+- **Volumen mínimo:** 30 GB.
+
+---
+
+#### Estructura del repositorio
+| Carpeta | Descripcion |
+|---------|-------------|
+| **[1.InstallMongoDB.Ec2](1.InstallMongoDB.Ec2/)** | Pasos e instrucciones para instalar MongoDB en una instancia EC2 (Ubuntu). |
+| **[2.GenerateBackup](2.GenerateBackup/)** | Script para generar backups con `mongodump` y subirlos a S3. Incluye logging, lock y opcion `--gzip`. |
+| **[3.RestoreBackup](3.RestoreBackup/)** | Script y pasos para bajar un backup desde S3 y restaurar en MongoDB con `mongorestore`. |
+
+---
+
+#### Flujo típico
+1. Crear la instancia EC2 y cumplir los requisitos de tamano/volumen.
+2. Seguir **[1.InstallMongoDB.Ec2](1.InstallMongoDB.Ec2/)** para instalar MongoDB.
+3. Configurar **[2.GenerateBackup](2.GenerateBackup/)** (bucket S3, cron) para backups automaticos.
+4. Cuando haga falta, usar **[3.RestoreBackup](3.RestoreBackup/)** para restaurar desde S3.
+
+---
+
+#### Automatización con cron
+Para ejecutar el backup de forma automatica desde la instancia:
+
+- **Producción (diario):** todos los dias a las 5:00  
+  `0 5 * * * /home/ubuntu/generate-backup.sh --gzip >> /var/log/mongodb-backup.log 2>&1`
+- **QA (semanal):** todos los viernes a las 5:00  
+  `0 5 * * 5 /home/ubuntu/generate-backup.sh --gzip >> /var/log/mongodb-backup.log 2>&1`
+
+Ajusta la ruta del script (`/home/ubuntu/generate-backup.sh`) segun donde lo tengas. Mas detalles en [2.GenerateBackup/README.md](2.GenerateBackup/README.md).
+Referencia de cron en Ubuntu: [Crontab.Script](https://github.com/agustinafassina/Crontab.Script).
