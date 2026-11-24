@@ -1,25 +1,27 @@
 # RestoreBackup
 Scripts and procedures to restore MongoDB backups from S3 to EC2 instances. Includes guidance on selecting the correct backup files and restoring the database to a desired state.
 
+> ⚠️ `mongorestore` connects to a **running** MongoDB server. Do **not** stop `mongod` before restoring.
+
 ## Steps to restore a database 👣
-1. Stop the MongoDB service (optional, to prevent conflicts during restore):
+1. List the available backups in S3 (each one is a timestamp folder created by `generate-backup.sh`):
 ```
-sudo systemctl stop mongod
+aws s3 ls s3://<bucket>/<prefix>/
 ```
 
-2. Create a directory for the backup:
+2. Create a local directory for the backup:
 ```
-mkdir -p backups/01032025200001
+mkdir -p ~/backups/20250301_050001
 ```
 
 3. Download the backup from S3:
 ```
-aws s3 cp s3://backup /backups/01032025200001 --recursive
+aws s3 cp s3://<bucket>/<prefix>/20250301_050001 ~/backups/20250301_050001 --recursive
 ```
 
-4. Stop MongoDB before restoring (if not already stopped), to ensure a clean restore process:
+4. Make sure MongoDB is running:
 ```
-sudo systemctl stop mongod
+sudo systemctl start mongod
 ```
 
 5. Create the target database if it does not exist:
@@ -29,7 +31,7 @@ MongoDB creates databases automatically when data is inserted, so typically, no 
 
    **Using the script (recommended):**
    ```bash
-   export BACKUP_PATH=/backups/01032025200001
+   export BACKUP_PATH=~/backups/20250301_050001
    export MONGO_HOST=localhost
    export MONGO_PORT=27017
    # If backup was created with --gzip:
@@ -41,15 +43,9 @@ MongoDB creates databases automatically when data is inserted, so typically, no 
 
    **Manual:**
    ```
-   mongorestore --host=$MONGO_HOST --port=$MONGO_PORT --dir=/backups/01032025200001 --drop
+   mongorestore --host=$MONGO_HOST --port=$MONGO_PORT --dir=$HOME/backups/20250301_050001 --drop
    ```
-   For gzip backups add: `--gzip`
+   For gzip backups add: `--gzip`. To restore only one database add: `--nsInclude="my_database.*"`
 
-7. The --drop option ensures that existing collections are dropped before restoring.
-8. Verify the restored databases and data
-9. Restart the MongoDB service:
-```
-sudo systemctl start mongod
-```
-
-
+7. The `--drop` option ensures that existing collections are dropped before restoring.
+8. Verify the restored databases and data.

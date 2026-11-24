@@ -25,13 +25,19 @@ Before using these scripts:
 #### Automation with cron 🕒
 To run the backup automatically from the instance:
 - **Production (daily):** every day at 5:00 AM  
-  `0 5 * * * /home/ubuntu/generate-backup.sh --gzip >> /var/log/mongodb-backup.log 2>&1`
+  `0 5 * * * /home/ubuntu/generate-backup.sh --gzip > /dev/null 2>&1`
 - **QA (weekly):** every Friday at 5:00 AM  
-  `0 5 * * 5 /home/ubuntu/generate-backup.sh --gzip >> /var/log/mongodb-backup.log 2>&1`
+  `0 5 * * 5 /home/ubuntu/generate-backup.sh --gzip > /dev/null 2>&1`
 
 Adjust the script path (`/home/ubuntu/generate-backup.sh`) to match where you placed it. </br>
 More details in [2.GenerateBackup/README.md](2.GenerateBackup/README.md). </br>
 Cron reference for Ubuntu: [Crontab.Script](https://github.com/agustinafassina/Crontab.Script).
+
+#### Line endings (Windows → EC2) ⚠️
+If you copy the `.sh` scripts from Windows to the EC2 instance, make sure they use **LF** line endings, not **CRLF**. With CRLF the script fails on Linux with an error like `/bin/bash^M: bad interpreter`. To fix it, run this on the instance:
+```
+sed -i 's/\r$//' *.sh
+```
 
 ## ——— Español ———
 Scripts para instalar MongoDB en EC2, generar backups y restaurarlos, guardando los backups en un bucket S3. Cubre todo el ciclo: instalacion, backup automatico y restauracion cuando haga falta.
@@ -61,10 +67,16 @@ Antes de usar estos scripts:
 Para ejecutar el backup de forma automatica desde la instancia:
 
 - **Producción (diario):** todos los dias a las 5:00  
-  `0 5 * * * /home/ubuntu/generate-backup.sh --gzip >> /var/log/mongodb-backup.log 2>&1`
+  `0 5 * * * /home/ubuntu/generate-backup.sh --gzip > /dev/null 2>&1`
 - **QA (semanal):** todos los viernes a las 5:00  
-  `0 5 * * 5 /home/ubuntu/generate-backup.sh --gzip >> /var/log/mongodb-backup.log 2>&1`
+  `0 5 * * 5 /home/ubuntu/generate-backup.sh --gzip > /dev/null 2>&1`
 
 Ajusta la ruta del script (`/home/ubuntu/generate-backup.sh`) segun donde lo tengas. </br>
 Mas detalles en [2.GenerateBackup/README.md](2.GenerateBackup/README.md). </br>
 Referencia de cron en Ubuntu: [Crontab.Script](https://github.com/agustinafassina/Crontab.Script).
+
+#### Saltos de línea (Windows → EC2) ⚠️
+Si copiás los scripts `.sh` desde Windows a la instancia EC2, fijate que tengan saltos de línea **LF** y no **CRLF**. Con CRLF el script falla en Linux con un error tipo `/bin/bash^M: bad interpreter`. Para arreglarlo, corré en la instancia:
+```
+sed -i 's/\r$//' *.sh
+```

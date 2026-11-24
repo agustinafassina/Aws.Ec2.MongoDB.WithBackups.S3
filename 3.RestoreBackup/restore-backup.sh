@@ -21,26 +21,25 @@ if [[ ! -d "$backup_path" ]]; then
 fi
 
 # --- Main ---
+# mongorestore connects to a running server, so mongod must stay UP during the restore.
+# --drop replaces each restored collection; no need to touch the data directory.
 log "Restore from: $backup_path"
 log "MongoDB: $mongo_host:$mongo_port"
 
-# Step 1: Stop MongoDB
-log "Stopping MongoDB..."
-sudo systemctl stop mongod || true
+if ! systemctl is-active --quiet mongod; then
+  log "mongod is not running. Starting it..."
+  sudo systemctl start mongod
+fi
 
-# Step 2: Clean existing data
-log "Cleaning existing data..."
-sudo rm -rf /var/lib/mongo/*
-
-# Step 3: Restore
 log "Restoring from backup..."
 MONGORESTORE_OPTS=(--host="$mongo_host" --port="$mongo_port" --dir="$backup_path" --drop)
-[[ -n "$mongo_db_name" ]] && MONGORESTORE_OPTS+=(--db="$mongo_db_name")
-[[ "$use_gzip" == "true" || "$use_gzip" == "1" ]] && MONGORESTORE_OPTS+=(--gzip)
+if [[ -n "$mongo_db_name" ]]; then
+  MONGORESTORE_OPTS+=(--nsInclude="${mongo_db_name}.*")
+  log "Restoring only database: $mongo_db_name"
+fi
+if [[ "$use_gzip" == "true" || "$use_gzip" == "1" ]]; then
+  MONGORESTORE_OPTS+=(--gzip)
+fi
 mongorestore "${MONGORESTORE_OPTS[@]}"
-
-# Step 4: Start MongoDB
-log "Starting MongoDB..."
-sudo systemctl start mongod
 
 log "Restore complete."
