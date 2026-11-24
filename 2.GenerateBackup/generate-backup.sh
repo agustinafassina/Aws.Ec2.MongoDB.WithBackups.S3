@@ -8,19 +8,14 @@ S3_PREFIX="backuptest"
 LOCK_FILE="/tmp/mongodb-backup.lock"
 LOG_FILE="/var/log/mongodb-backup.log"
 
-# --- Helpers ---
+# --- Logging ---
+# Send all output (including mongodump / aws errors) to the terminal and the log file.
+# The script owns the log file, so cron must NOT redirect into it again.
+exec > >(tee -a "$LOG_FILE") 2>&1
+
 log() {
-  echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOG_FILE"
+  echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"
 }
-
-cleanup() {
-  if [[ -f "$LOCK_FILE" ]]; then
-    rm -f "$LOCK_FILE"
-    log "Lock released."
-  fi
-}
-
-trap cleanup EXIT
 
 # --- Main ---
 NOW=$(date +%Y%m%d_%H%M%S)
@@ -29,12 +24,14 @@ USE_GZIP=false
 
 [[ "${1:-}" == "--gzip" ]] && USE_GZIP=true
 
-# Prevent overlapping runs (e.g. cron)
-if [[ -f "$LOCK_FILE" ]]; then
-  log "ERROR: Another backup is running (lock file exists). Exiting."
+# Prevent overlapping runs (e.g. cron). flock is released automatically when the
+# script exits (even if killed), so a stale lock can never block future backups
+# and a second run never removes the lock held by the first one.
+exec 200>"$LOCK_FILE"
+if ! flock -n 200; then
+  log "ERROR: Another backup is running (lock held on $LOCK_FILE). Exiting."
   exit 1
 fi
-touch "$LOCK_FILE"
 log "Backup started (PID $$)."
 
 # Create backup directory

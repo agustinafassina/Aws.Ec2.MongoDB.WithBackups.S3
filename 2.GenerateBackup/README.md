@@ -5,7 +5,7 @@ Scripts and instructions to create automated daily backups of MongoDB. These scr
 - **Normal:** `./generate-backup.sh`
 - **Compressed (recommended for large DBs):** `./generate-backup.sh --gzip` — saves space and transfer time; use `RESTORE_GZIP=true` when restoring.
 
-Logs are written to `/var/log/mongodb-backup.log`. A lock file prevents overlapping runs if cron overlaps.
+Logs are written to `/var/log/mongodb-backup.log` by the script itself (including `mongodump` / `aws` errors), so the cron entry should send its output to `/dev/null` instead of redirecting into the log again (otherwise every line is duplicated). A lock (`flock`) prevents overlapping runs if cron overlaps; it is released automatically when the script ends, even if it is killed.
 
 ## Steps to generate backups 👣
 1. Add AWS CLI to the instance
@@ -28,7 +28,7 @@ vim generate-backup.sh
 6. Add the script to the instance and make it executable: `chmod +x generate-backup.sh`
 7. Have the S3 bucket and prefix ready.
 8. For automation, add a cron job (examples):
-   - Every day at 5 AM: `0 5 * * * /home/ubuntu/generate-backup.sh --gzip >> /var/log/mongodb-backup.log 2>&1`
-   - Every Friday at 5 AM: `0 5 * * 5 /home/ubuntu/generate-backup.sh --gzip >> /var/log/mongodb-backup.log 2>&1`
+   - Every day at 5 AM: `0 5 * * * /home/ubuntu/generate-backup.sh --gzip > /dev/null 2>&1`
+   - Every Friday at 5 AM: `0 5 * * 5 /home/ubuntu/generate-backup.sh --gzip > /dev/null 2>&1`
 
 
